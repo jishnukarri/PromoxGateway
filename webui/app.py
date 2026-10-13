@@ -38,7 +38,8 @@ load_dotenv(ENV_FILE)
 
 PASSWORD = os.getenv("WEBUI_PASSWORD")
 SESSION_SECRET = os.getenv("WEBUI_SESSION_SECRET")
-
+SSL_CERT = os.getenv("SSL_CERT")
+SSL_KEY = os.getenv("SSL_KEY")
 HOST = os.getenv("WEBUI_HOST", "0.0.0.0")
 PORT = int(os.getenv("WEBUI_PORT", "5000"))
 
@@ -500,8 +501,8 @@ def nginx_config_for_routes():
             "    listen 443 ssl;",
             f"    server_name {route['domain']};",
             "",
-            "    ssl_certificate /opt/proxmox-gateway/ssl/prox1-lon-jishnu-tech.pem;",
-            "    ssl_certificate_key /opt/proxmox-gateway/ssl/prox1-lon-jishnu-tech.key;",
+            f"    ssl_certificate {SSL_CERT};",
+            f"    ssl_certificate_key {SSL_KEY};",
             "",
             "    location / {",
             f"        proxy_pass http://{route['ip']}:{route['port']};",

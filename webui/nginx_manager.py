@@ -3,7 +3,8 @@ import json
 import re
 import subprocess
 from pathlib import Path
-
+from dotenv import load_dotenv
+import os
 
 STATE_FILE = Path("/var/lib/proxmox-gateway/state.json")
 ROUTES_FILE = Path("/var/lib/proxmox-gateway/nginx_routes.json")
@@ -11,6 +12,12 @@ ROUTES_FILE = Path("/var/lib/proxmox-gateway/nginx_routes.json")
 CONFIG_DIR = Path("/etc/nginx/proxmox-gateway")
 CONFIG_FILE = CONFIG_DIR / "routes.conf"
 
+ENV_FILE = ".env"
+
+load_dotenv(ENV_FILE)
+
+SSL_CERT = os.getenv("SSL_CERT")
+SSL_KEY = os.getenv("SSL_KEY")
 
 DOMAIN_RE = re.compile(
     r"^[a-zA-Z0-9]"
@@ -175,8 +182,8 @@ def rebuild():
                 "    listen 443 ssl;",
                 f"    server_name {route['domain']};",
                 "",
-                "    ssl_certificate /opt/proxmox-gateway/ssl/prox1-lon-jishnu-tech.pem;",
-                "    ssl_certificate_key /opt/proxmox-gateway/ssl/prox1-lon-jishnu-tech.key;",
+                f"    ssl_certificate {SSL_CERT};",
+                f"    ssl_certificate_key {SSL_KEY};",
                 "",
                 "    location / {",
                 f"        proxy_pass http://{route['ip']}:{route['port']};",
